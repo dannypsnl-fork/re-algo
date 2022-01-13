@@ -18,6 +18,7 @@
   (@ "(foo 2)"))
 (define @result
   (obs-debounce
+   #:duration 500
    (obs-combine
     (λ (code test)
       (define eval
@@ -31,25 +32,28 @@
                        [gui:current-eventspace user-eventspace])
           (make-module-evaluator code)))
       (define r (eval test))
-      (cond
-        [(void? r) ""]
-        [else (format "return ~a" r)]))
+      (format "return ~a" r))
     @code
     @test)))
 
-(define win
-  (window #:title "re-algo"
-          #:size '(800 400)
-          (hpanel (input #:margin '(0 0)
-                         #:stretch '(#t #t)
-                         @code
-                         (λ (action text)
-                           (:= @code text)))
-                  (vpanel (input @test
-                                 (λ (action text)
-                                   (:= @test text)))
-                          (input #:margin '(0 0)
-                                 #:stretch '(#t #t)
-                                 @result)))))
+(define font-pragmata (font "PragmataPro Mono Liga" 14))
+(define (update target)
+  (λ (action text)
+    (displayln action)
+    (<~ target (λ (x) text))))
 
-(render win)
+(render
+ (window #:title "re-algo"
+         #:size '(800 400)
+         (hpanel (input #:margin '(0 0)
+                        #:stretch '(#t #t)
+                        #:font font-pragmata
+                        #:style '(single hscroll)
+                        @code
+                        (update @code))
+                 (vpanel (input #:font font-pragmata
+                                @test
+                                (update @test))
+                         (input #:margin '(0 0)
+                                #:stretch '(#t #t)
+                                @result)))))
