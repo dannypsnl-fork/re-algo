@@ -11,12 +11,23 @@
     (gui:make-eventspace)))
 
 (define @code
-  (@ "#lang racket
-
-(define (foo x)
-  (add1 x))"))
+  (@ "(define (binary-search key l)
+  (let loop ([low 0]
+             [high (sub1 (length l))])
+    (define c (<= low high))
+    (define mid (floor (/ (+ low high) 2)))
+    (define v (list-ref l mid))
+    (cond
+      [(and (< v key)
+            c)
+       (loop (add1 mid) high)]
+      [(and (> v key)
+            c)
+       (loop low (sub1 mid))]
+      [c mid]
+      [else -1])))"))
 (define @test
-  (@ "(foo 2)"))
+  (@ "(binary-search 2 (list 1 2 5 6 9 10 15))"))
 
 (define @result
   (obs-debounce
@@ -32,7 +43,7 @@
                        [sandbox-gui-available #t]
                        [sandbox-path-permissions `((read ,(current-directory)))]
                        [gui:current-eventspace user-eventspace])
-          (make-module-evaluator code)))
+          (make-evaluator 'racket code)))
       (define r (eval test))
       (format "return ~a" r))
     @code
@@ -44,14 +55,19 @@
     (:= target text)))
 
 (render
- (window #:title "re-algo"
-         #:size '(800 400)
-         (hpanel (racket:text #:font font-pragmata
-                              @code
-                              (update @code))
-                 (vpanel (input #:font font-pragmata
-                                @test
-                                (update @test))
-                         (input #:margin '(0 0)
-                                #:stretch '(#t #t)
-                                @result)))))
+ (window
+  #:title "re-algo"
+  #:size '(800 500)
+  (hpanel (racket:text
+           #:font font-pragmata
+           @code
+           (update @code))
+          (vpanel (input
+                   #:font font-pragmata
+                   @test
+                   (update @test))
+                  (input
+                   #:margin '(0 0)
+                   #:stretch '(#t #t)
+                   @result)))))
+
