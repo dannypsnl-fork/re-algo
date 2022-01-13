@@ -2,7 +2,8 @@
 (require racket/gui/easy
          racket/gui/easy/operator
          racket/sandbox
-         (prefix-in gui: racket/gui))
+         (prefix-in gui: racket/gui)
+         "racket-text.rkt")
 
 (define user-eventspace
   (parameterize ([current-custodian (make-custodian)]
@@ -16,6 +17,7 @@
   (add1 x))"))
 (define @test
   (@ "(foo 2)"))
+
 (define @result
   (obs-debounce
    #:duration 500
@@ -39,18 +41,14 @@
 (define font-pragmata (font "PragmataPro Mono Liga" 14))
 (define (update target)
   (λ (action text)
-    (displayln action)
-    (<~ target (λ (x) text))))
+    (:= target text)))
 
 (render
  (window #:title "re-algo"
          #:size '(800 400)
-         (hpanel (input #:margin '(0 0)
-                        #:stretch '(#t #t)
-                        #:font font-pragmata
-                        #:style '(single hscroll)
-                        @code
-                        (update @code))
+         (hpanel (racket:text #:font font-pragmata
+                              @code
+                              (update @code))
                  (vpanel (input #:font font-pragmata
                                 @test
                                 (update @test))
