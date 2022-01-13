@@ -1,3 +1,3 @@
 re-algo
 =======
-README text here.
+This is a simple algorithm developing tool.
