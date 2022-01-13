@@ -33,7 +33,7 @@
       (define r (eval test))
       (cond
         [(void? r) ""]
-        [else (format "~a" r)]))
+        [else (format "return ~a" r)]))
     @code
     @test)))
 
