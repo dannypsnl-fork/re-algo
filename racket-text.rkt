@@ -12,7 +12,8 @@
     (super-new)
 
     (define/augment (on-change)
-      (action 'on-change (send this get-text)))
+      (when action
+        (action 'on-change (send this get-text))))
 
     (define/public (dependencies)
       (list @code))

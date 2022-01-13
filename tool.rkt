@@ -1,5 +1,8 @@
 #lang racket/base
-(require racket/gui/easy
+(require racket/match
+         racket/string
+         racket/format
+         racket/gui/easy
          racket/gui/easy/operator
          racket/sandbox
          (prefix-in gui: racket/gui)
@@ -43,9 +46,16 @@
                        [sandbox-gui-available #t]
                        [sandbox-path-permissions `((read ,(current-directory)))]
                        [gui:current-eventspace user-eventspace])
-          (make-evaluator 'racket code)))
+          (make-evaluator 're-algo/inspect code)))
       (define r (eval test))
-      (format "return ~a" r))
+      (define local-vars
+        (hash-map (eval "(dump)")
+                  (λ (name vals)
+                    (format "~a = ~a\n" name
+                            (string-join (map ~a vals) "|")))))
+      (format "~areturn ~a"
+              (apply string-append local-vars)
+              r))
     @code
     @test)))
 
@@ -67,6 +77,7 @@
                    @test
                    (update @test))
                   (input
+                   #:font font-pragmata
                    #:margin '(0 0)
                    #:stretch '(#t #t)
                    @result)))))
