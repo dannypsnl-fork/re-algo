@@ -54,7 +54,6 @@
 
   (define (update target)
     (λ (action text)
-      (displayln action)
       (:= target text)))
 
   (render
